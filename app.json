@@ -1,0 +1,13 @@
+# Tree Scanner Environment Variables
+# -------------------------------------------------------
+# This file keeps sensitive keys out of your code.
+# IMPORTANT: Never upload this file to GitHub.
+#            It is already listed in .gitignore below.
+# -------------------------------------------------------
+
+# Your iNaturalist app name (register free at
+# https://www.inaturalist.org/oauth/applications/new)
+INATURALIST_APP_NAME=tree-scanner
+
+# Optional: Add your iNaturalist username for higher limits
+INATURALIST_USERNAME=your_username

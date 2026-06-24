@@ -1,0 +1,108 @@
+# 🌳 Tree Scanner
+
+A mobile app for professional street tree data collection, built with React Native and Expo.
+
+## What it does
+
+Point your phone at any tree, press scan, and the app will:
+- Identify the tree (genus, species, common name, confidence score)
+- Record the exact GPS coordinates and street address
+- Log the date, time, and surveyor name
+- Save a photo and a structured data record to the cloud
+- Export your full dataset as CSV, GeoJSON, or Shapefile for use in GIS and urban forestry systems
+
+## Tech stack
+
+| Layer | Technology |
+|---|---|
+| Mobile app | React Native + Expo |
+| Camera | Expo Camera |
+| GPS | Expo Location |
+| Tree identification | iNaturalist Computer Vision API |
+| Tabular database | Firebase Firestore |
+| Photo storage | Firebase Storage |
+| Data export | CSV, GeoJSON, Shapefile-compatible |
+
+## Why iNaturalist?
+
+iNaturalist is used by scientists, researchers, and city governments worldwide. Their computer vision API is free with no daily hard limit (~10,000 calls/day), making it ideal for professional field data collection.
+
+## Project structure
+
+```
+TreeScanner/
+├── App.js                          # Entry point
+├── app.json                        # Expo configuration + permissions
+├── package.json                    # Dependencies
+├── firebase.config.js              # Firebase credentials (not on GitHub)
+├── .env                            # Environment variables (not on GitHub)
+├── navigation/
+│   └── AppNavigator.js             # Screen routing + bottom tabs
+├── screens/
+│   ├── CameraScreen.js             # Camera viewfinder + scan button
+│   ├── ResultScreen.js             # Identification results + save
+│   └── CollectionScreen.js         # Saved trees list + export
+└── services/
+    ├── locationService.js          # GPS + reverse geocoding
+    ├── iNaturalistService.js       # Tree identification API
+    ├── firebaseService.js          # Firestore + Storage read/write
+    └── exportService.js            # CSV, GeoJSON, Shapefile export
+```
+
+## Data schema
+
+Every tree scan saves a structured record with these fields:
+
+| Field | Description |
+|---|---|
+| tree_id | Unique identifier |
+| common_name | e.g. Southern Live Oak |
+| scientific_name | e.g. Quercus virginiana |
+| genus | e.g. Quercus |
+| species | e.g. virginiana |
+| family | e.g. Fagaceae |
+| order | e.g. Fagales |
+| confidence_score | 0–100% |
+| latitude | GPS latitude |
+| longitude | GPS longitude |
+| address | Street address |
+| date | YYYY-MM-DD |
+| time | HH:MM:SS |
+| surveyor | Collector name |
+| notes | Field observations |
+| photo_url | Link to photo in Firebase Storage |
+
+## Setup instructions
+
+### 1. Clone the repo
+```bash
+git clone https://github.com/yourusername/treescanner.git
+cd treescanner
+```
+
+### 2. Install dependencies
+```bash
+npm install
+```
+
+### 3. Set up Firebase
+- Create a free project at https://console.firebase.google.com
+- Enable Firestore Database and Storage
+- Copy your config into `firebase.config.js`
+
+### 4. Run the app
+```bash
+npx expo start
+```
+- Download **Expo Go** on your phone
+- Scan the QR code that appears in your terminal
+
+## Export formats
+
+- **CSV** — opens in Excel or Google Sheets
+- **GeoJSON** — loads directly into ArcGIS, QGIS, or any mapping platform
+- **Shapefile-compatible** — GeoJSON with 10-character field names, ready for conversion in ArcGIS or QGIS to full Shapefile format
+
+## Built by
+
+Built as a portfolio project demonstrating mobile app development, REST API integration, cloud database architecture, and GIS data pipeline design.
