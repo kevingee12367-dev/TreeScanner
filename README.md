@@ -1,161 +1,51 @@
-// services/exportService.js
-// -------------------------------------------------------
-// WORKFLOW: "Export data" node
-//
-// This service reads all saved tree records from Firestore
-// and converts them into three formats:
-//
-//   CSV       → Excel, Google Sheets
-//   GeoJSON   → ArcGIS, QGIS, mapping tools
-//   Shapefile → City/urban forestry databases
-//              (simplified GeoJSON with .shp naming
-//               for compatibility — full binary Shapefile
-//               generation requires a desktop tool)
-//
-// This is what makes your data portable and lets it
-// migrate to professional systems.
-// -------------------------------------------------------
+## 🚀 Setup Instructions
 
-import * as FileSystem from "expo-file-system";
-import * as Sharing from "expo-sharing";
+### 1. Clone the repo
+```bash
+git clone https://github.com/kevingee12367/TreeScanner.git
+cd TreeScanner
+```
 
-// ---- EXPORT AS CSV -------------------------------------
+### 2. Install dependencies
+```bash
+npm install --legacy-peer-deps
+```
 
-export const exportCSV = async (trees) => {
-  const headers = [
-    "tree_id",
-    "common_name",
-    "scientific_name",
-    "genus",
-    "species",
-    "family",
-    "order",
-    "confidence_score",
-    "latitude",
-    "longitude",
-    "address",
-    "date",
-    "time",
-    "surveyor",
-    "notes",
-    "photo_url",
-  ].join(",");
+### 3. Set up Google Forms
+- Create a free Google Form at forms.google.com
+- Add all data fields as short answer questions
+- Link the form to a Google Sheet
+- Update the form URL and entry IDs in googleFormsService.js
 
-  const rows = trees.map((t) =>
-    [
-      t.tree_id,
-      `"${t.common_name}"`,
-      `"${t.scientific_name}"`,
-      `"${t.genus}"`,
-      `"${t.species}"`,
-      `"${t.family}"`,
-      `"${t.order}"`,
-      t.confidence_score,
-      t.latitude,
-      t.longitude,
-      `"${t.address}"`,
-      t.date,
-      t.time,
-      `"${t.surveyor}"`,
-      `"${t.notes}"`,
-      `"${t.photo_url}"`,
-    ].join(",")
-  );
+### 4. Run the app
+```bash
+npx expo start
+```
+- Download Expo Go on your phone (free on App Store or Google Play)
+- Scan the QR code that appears in your terminal
 
-  const csvContent = [headers, ...rows].join("\n");
-  return await shareFile(csvContent, "tree_data.csv", "text/csv");
-};
+## 📤 Export Formats
 
-// ---- EXPORT AS GEOJSON ---------------------------------
+- **CSV** — opens directly in Excel or Google Sheets
+- **GeoJSON** — loads into ArcGIS, QGIS, or any mapping platform
+- **Shapefile-compatible** — GeoJSON with 10-character field names ready for ArcGIS/QGIS conversion
 
-export const exportGeoJSON = async (trees) => {
-  const geojson = {
-    type: "FeatureCollection",
-    features: trees.map((t) => ({
-      type: "Feature",
-      geometry: {
-        type: "Point",
-        coordinates: [t.longitude, t.latitude],
-      },
-      properties: {
-        tree_id: t.tree_id,
-        common_name: t.common_name,
-        scientific_name: t.scientific_name,
-        genus: t.genus,
-        species: t.species,
-        family: t.family,
-        order: t.order,
-        confidence_score: t.confidence_score,
-        address: t.address,
-        date: t.date,
-        time: t.time,
-        surveyor: t.surveyor,
-        notes: t.notes,
-        photo_url: t.photo_url,
-      },
-    })),
-  };
+## 🔒 Security
 
-  const content = JSON.stringify(geojson, null, 2);
-  return await shareFile(content, "tree_data.geojson", "application/json");
-};
+- API keys stored in .env file which is excluded from GitHub via .gitignore
+- No sensitive credentials committed to the repository
+- Dependency vulnerabilities managed via npm audit
 
-// ---- EXPORT AS SHAPEFILE-COMPATIBLE GEOJSON ------------
-// Note: True binary Shapefiles require desktop GIS tools.
-// This exports a GeoJSON with Shapefile-compatible field
-// names (max 10 chars) that ArcGIS and QGIS can convert
-// directly. This is the professional standard approach
-// for mobile-to-GIS data pipelines.
+## 👤 Built By
 
-export const exportShapefile = async (trees) => {
-  const geojson = {
-    type: "FeatureCollection",
-    features: trees.map((t) => ({
-      type: "Feature",
-      geometry: {
-        type: "Point",
-        coordinates: [t.longitude, t.latitude],
-      },
-      properties: {
-        tree_id: t.tree_id,
-        cmn_name: t.common_name,        // max 10 chars for .dbf
-        sci_name: t.scientific_name,
-        genus: t.genus,
-        species: t.species,
-        family: t.family,
-        order: t.order,
-        confidence: t.confidence_score,
-        address: t.address,
-        date: t.date,
-        time: t.time,
-        surveyor: t.surveyor,
-        notes: t.notes,
-      },
-    })),
-  };
+Kevin Gee Jr.
+IT Support Specialist | VeritaGeo Solutions
+Purdue Global — B.S. Information Technology
 
-  const content = JSON.stringify(geojson, null, 2);
-  return await shareFile(content, "tree_data_shapefile.geojson", "application/json");
-};
-
-// ---- SHARED FILE HELPER --------------------------------
-
-const shareFile = async (content, filename, mimeType) => {
-  const fileUri = FileSystem.documentDirectory + filename;
-
-  await FileSystem.writeAsStringAsync(fileUri, content, {
-    encoding: FileSystem.EncodingType.UTF8,
-  });
-
-  const isAvailable = await Sharing.isAvailableAsync();
-  if (!isAvailable) {
-    throw new Error("Sharing is not available on this device.");
-  }
-
-  await Sharing.shareAsync(fileUri, {
-    mimeType,
-    dialogTitle: `Export ${filename}`,
-  });
-
-  return fileUri;
-};
+Built as a professional portfolio project demonstrating:
+- Mobile app development with React Native
+- REST API integration with PlantNet
+- GIS data pipeline design and export
+- Relational database schema design
+- Google Sheets automation via Forms API
+- EAS cloud deployment with Expo
